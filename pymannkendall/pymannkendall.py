@@ -297,7 +297,7 @@ def hamed_rao_modification_test(x_old, alpha = 0.05, lag=None):
     I = rankdata(x_detrend)
     
     # account for autocorrelation
-    acf_1 = __acf(I, nlags=lag-1)
+    acf_1 = __acf(I, nlags=lag-1) # Victor's comment: by default, remove all-lag autocorrelation (rather than lag-1 only)
     interval = norm.ppf(1 - alpha / 2) / np.sqrt(n)
     upper_bound = 0 + interval
     lower_bound = 0 - interval
