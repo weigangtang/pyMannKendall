@@ -293,11 +293,11 @@ def hamed_rao_modification_test(x_old, alpha = 0.05, lag=None):
     # detrending
     # x_detrend = x - np.multiply(range(1,n+1), np.median(x))
     slope, intercept = sens_slope(x_old)
-    x_detrend = x - np.arange(1,n+1) * slope
+    x_detrend = x - np.arange(1,n+1) * slope # Victor's comment: remove Sen's slope before prewhitening
     I = rankdata(x_detrend)
     
     # account for autocorrelation
-    acf_1 = __acf(I, nlags=lag-1) # Victor's comment: by default, remove all-lag autocorrelation (rather than lag-1 only)
+    acf_1 = __acf(I, nlags=lag-1) # Victor's comment: by default, remove autocorrelation of all lags (not only lag-1)
     interval = norm.ppf(1 - alpha / 2) / np.sqrt(n)
     upper_bound = 0 + interval
     lower_bound = 0 - interval
@@ -358,7 +358,7 @@ def yue_wang_modification_test(x_old, alpha = 0.05, lag=None):
     x_detrend = x - np.arange(1,n+1) * slope
     
     # account for autocorrelation
-    acf_1 = __acf(x_detrend, nlags=lag-1)
+    acf_1 = __acf(x_detrend, nlags=lag-1) # Victor's comment: by default, remove autocorrelation of all lags (not only lag-1)
     idx = np.arange(1,lag)
     sni = np.sum((1 - idx/n) * acf_1[idx])
     
@@ -397,7 +397,7 @@ def pre_whitening_modification_test(x_old, alpha = 0.05):
     x, n = __missing_values_analysis(x, method = 'skip')
     
     # PreWhitening
-    acf_1 = __acf(x, nlags=1)[1]
+    acf_1 = __acf(x, nlags=1)[1] # Victor's comment: remove lag-1 autocorrelation, no matter if significant or not
     a = range(0, n-1)
     b = range(1, n)
     x = x[b] - x[a]*acf_1
@@ -441,10 +441,10 @@ def trend_free_pre_whitening_modification_test(x_old, alpha = 0.05):
     
     # detrending
     slope, intercept = sens_slope(x_old)
-    x_detrend = x - np.arange(1,n+1) * slope
+    x_detrend = x - np.arange(1,n+1) * slope # Victor's comment: remove trend (Sen's slope) before prewhitening
     
     # PreWhitening
-    acf_1 = __acf(x_detrend, nlags=1)[1]
+    acf_1 = __acf(x_detrend, nlags=1)[1] # Victor's comment: remove lag-1 autocorrelation, no matter if significant or not
     a = range(0, n-1)
     b = range(1, n)
     x = x_detrend[b] - x_detrend[a]*acf_1
